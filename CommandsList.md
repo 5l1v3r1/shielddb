@@ -1,0 +1,64 @@
+# this is the help file, included with the software
+
+
+## SHIELDDB SQL COMMANDS ##
+
+### >> select ###
+  * => SQL select query - supported query types
+  * => select `*` from table
+  * => select foo,bar,baz from table
+  * => select `*` from table where foo = "bar"
+  * => select foo,bar from table where foo = "baz" and bar = "qux"
+
+  * ### Regular Expressions ###
+
+  * => select `*` from foo where bar = "`/^[l1][e3][e3][t7]$/`"
+  * => select foo,bar,qux from baz where qux = "`/^[l1][e3][e3][t7]$/i`"
+  * **Perl Regular Expressions accepted**
+
+### >> insert ###
+  * => SQL insert query - standard query
+  * => insert into table foo values(NULL,"foo","bar","baz",400)
+  * **Current Supported Data Types**
+  * => int,not null,auto\_increment,varchar(#)
+
+### >> update ###
+  * => SQL UPDATE query
+  * => update table foo set bar = "qux" where baz = "foo"
+
+### -> delete ###
+  * => SQL delete query - delete records from tables
+  * => delete from foo where bar = "qux"
+  * => delete from foo where baz = "bar" and qux = 0
+  * **Perl Regular Expressions accepted**
+
+### >> create ###
+  * => create database databasename
+  * => create table tablename (descriptor)
+
+### >> use ###
+  * => use specified databasename
+
+### >> show ###
+  * => show tables
+
+### >> describe ###
+  * => describe the database table from it's descriptor
+
+### >> clone ###
+  * => copy a table or entire database
+  * => clone table foo as bar
+  * => clone database baz as qux
+  * => clone db baz as foo
+
+### >> drop ###
+  * => delete a table or entire database - this process is irreversible
+  * => drop table foo
+  * => drop database bar
+
+### >> truncate ###
+  * => truncate a table removing all data except descriptor
+  * => truncate table foo
+
+### >> quit/exit ###
+  * => leave dbms
