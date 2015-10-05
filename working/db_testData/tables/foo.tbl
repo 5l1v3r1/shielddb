@@ -1,0 +1,3 @@
+id int not null auto_increment primary key,name varchar(50),email varchar(50)
+1,Gabriella Berdeaux,dacrwaaaab@gmail.com,Douglas Berdeaux,weaknetlabs@gmail.com
+2,Douglas Berdeaux,dacrwaaaab@gmail.com

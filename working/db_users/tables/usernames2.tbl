@@ -1,0 +1,1 @@
+user varchar(15),email varchar(30),phone int(10),name varchar(30)

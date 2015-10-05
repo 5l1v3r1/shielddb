@@ -1,0 +1,326 @@
+#!/usr/bin/perl -w
+use strict;
+#
+# ShieldDB Engine - Draft
+# 2013-2014 WeakNet Labs
+# WeakNetLabs@Gmail.com
+#
+
+sub prompt(); # prototyping in Perl? coool! :D
+sub query();
+sub db();
+sub error; # pass type and msg as strings
+sub sql_sel(); # SQL SELECT statement
+sub desc(); # similar to MySQL's describe
+sub n(); # for code dedupe
+sub getDate;
+sub help();
+sub cleanUp();
+$SIG{INT} = \&cleanUp;
+
+my @ARGV; # reserved for future CLI use
+my $db = "none";
+my $cmd = "";
+my $pcmd = ""; # preserved cmd for regexp / case sens / etc
+
+# Security (for now! Needs to be offloaded!):
+my @sec = ('users');
+my $sec = 0; # boolean for secured database usage
+my $logfile = getDate("log");
+open(LOG,">>$logfile");
+
+printf("\n Welcome to the ShieldDB Console.\n\n");
+prompt();
+sub prompt(){
+	printf("shieldDB %s (%s)> ",getDate("l"),$db);
+	# add the current database to the shell
+	$cmd = <STDIN>;
+	chomp $cmd;
+	$pcmd = $cmd; # preserve for regexp
+	$cmd =~ tr/A-Z/a-z/;
+	if($cmd ne ''){
+		query();
+	}else{
+		prompt();
+	}
+}
+
+sub query(){
+	my $logq = getDate("l");
+	$logq .= ": " . $cmd . "\n";
+	print LOG $logq;
+	if($cmd =~ m/^(exit|quit)/i){ # leave right away to not be
+		exit();        # invasive.
+	}elsif($cmd =~ m/^help/){
+		help();
+		prompt();
+	}
+	# --
+	# Generic commands:
+	# check here for syntax errors!
+	elsif($cmd !~ m/;$/){
+		error("syntax","missing terminating semi colon");
+		prompt();
+	} # do what the man says!
+	elsif($cmd =~ m/^clear/){ # clear the screen for my sanity
+                print "\n" x 300;
+                prompt();
+        }
+	elsif($cmd =~ m/^use (database)?/i){ # database select
+		db();
+		prompt();
+	}
+	# --
+	# EVERYTHING below this line REQUIRES a database:
+	if($db eq 'none'){
+		error("NTD","No database was selected yet.");
+		prompt();
+	}
+	elsif($cmd =~ m/^select/i){ # SQL SELECT statement
+		sql_sel();
+	}elsif($cmd =~ m/^describe/){
+		desc();
+	}elsif($cmd =~ m/^show /i){
+		show();
+	}
+	# --
+	# $cmd Not yet implemented
+	else{
+		print " Sorry, SQL command not recognized.\n";
+	}
+	prompt();
+}
+# SQL Subroutines:
+sub db(){
+	# check here if the db actually exists!
+	printf(" -> Using database: %s\n",$db);
+	$db = $cmd; # set the database name in shell
+	$db =~ s/.* ([a-zA-Z0-9_]+);$/$1/; # rid of trash!
+	if(opendir(my $d,"db_".$db)){
+		closedir($d);
+		printf(" -> Dabatase %s loaded successfully\n",$db);
+	}else{
+		error("NTD","Database " . $db . " does not exist.");
+		$db = "none"; # reset
+	}
+	if(grep($db,@sec)){
+		printf(" WARNING: %s is a secured Database!\n",$db);
+		$sec = 1;
+	}else{
+		$sec = 0; # in case they switched DBs in maintenance
+	}
+}
+sub sql_sel(){
+	my $clause = 0;
+	my $sep = "+"; # separator for records (dynamic length)
+	my $regex = 0; # boolean for regular expressions
+	my $whereWhat = "";
+	my @output; # array of records
+	my $whereEq = "";
+	my $what = $cmd;
+	my %ands; # for the and clauses linked list
+	$what =~ s/.*ect ([A-Za-z0-9,._*-]+) .*/$1/;
+	my @what = split(/,/,$what); # for multiple specified columns
+	my $tbl = $cmd;
+	my $and = 0;
+	$tbl =~ s/.*from ([a-zA-Z0-9._-]+).*/$1/;
+	if($cmd =~ m/ where /i){ # we have a WHERE clause;
+		$clause = 1;
+		$whereWhat = $cmd;
+		$whereWhat =~ s/.*where ([0-9A-Za-z_.-]+) =.*/$1/;
+		$whereEq = $pcmd; # use the preserved version
+			# select * from usernames where user = 'trevelyn' and email = 'weaknet' and phone = '412
+		$whereEq =~ s/.*where [0-9A-Za-z_.-]+ = ('|")([\/*?\]\[\{\}\)\(\^\$'"A-Za-z0-9_.-]+)('|").*/$2/;
+		print "CMD: " . $whereEq . "\n";
+		if($whereEq =~ m/^\/.*\/$/) {
+			$regex = 1; 
+			printf(" Using Regular Expression Pattern: %s\n",$whereEq); 
+		} # we have a regular expression //
+	}
+	if($cmd =~ m/ and /i){ # we have an AND clause
+		$and = 1;
+		my @ands = split(/ and /i,$cmd);
+		shift @ands;
+		foreach (@ands){
+			my $what = $_;
+			$what =~ s/ .*//;
+			my $is = $_;
+			$is =~ s/.* ('|")(.*)('|").*/$2/;
+			$ands{$what} = $is;
+		}
+	}
+	if(!open(TBL,"db_".$db."/tables/".$tbl.".tbl")){
+		error("NTD","Table: ".$tbl." does not exist or could not be read.");
+		prompt();
+	}else{
+		my @tblDesc = split(/,/,scalar <TBL>); # split up the first row
+		my %recHash; # record hash
+		my %colSize; # column length for padding purposes
+		my $i = 0; # to build the hash (auto? in interator?)
+		@what = () if ($what eq '*'); # for querys that are for every row
+		for(my $i = 0;$i<=$#tblDesc;$i++){ # array of table names
+			chomp($tblDesc[$i]);
+			my $len = $tblDesc[$i];
+			$len =~ s/.*\(([0-9]+)\).*/$1/; # grab length as integer
+			$tblDesc[$i] =~ s/ .*//;
+			$colSize{$tblDesc[$i]} = $len; # make has colSize be "column name" => integer for length
+		}
+		foreach(@tblDesc){
+			push(@what, $_) if($what eq '*');
+			$recHash{$_}=$i;
+			$i++;
+		}
+		# do specified columns actually exist?
+		foreach(@what){
+			if(!grep(/$_/,@tblDesc)){
+				error("COL","Column: ".$_." in Table: ".$tbl." does not exist.");
+			}
+			$sep .= "-" x (int($colSize{$_}) - 1) . "+"; # build the separator bar once
+		}
+		n();
+		while(<TBL>){ # loop through the table and display matching records:
+			chomp $_;
+			my @record = split(/,/,$_); # array of the record line in the table
+			my $output = ''; # reset output
+			if($clause){ # we have a clause (boolean)
+				if($regex){ # for regex syntax (boolean)
+					$whereEq =~ s/\/(.*)\//$1/; # drops the '/'s from the expression leaving just a pattern
+					if($record[$recHash{$whereWhat}] =~ m/$whereEq/){ # if that element from the record line matches the pattern ^[ft] for example
+						# construct the string result from specified columns
+						foreach(@what){ # name and email from example
+							my $match = "";
+							if(length($record[$recHash{$_}]) < $colSize{$_}){
+								$match = $record[$recHash{$_}];
+								my $buff = int($colSize{$_}) - length($record[$recHash{$_}]);
+								$match .= " " x $buff; # append a buffer for display
+							}else{
+								# THAIR SHOUL BE NO ELSE! HOW DARE UUUU!!!!!!!
+							}
+							$output .= $match;
+						}
+						$output = $sep . "\n " . " " . $output;
+						push(@output,$output);
+					}
+				}else{ # no regex syntax
+					my $partial = 0;
+					if($record[$recHash{$whereWhat}] eq $whereEq){
+						# AND clause?
+						while(my($what, $is) = each(%ands)){
+							print "WHAT: " . $what . " IS: " . $is . " RECORD: " . $record[$recHash{$what}] . "\n";
+							# insert regexp support here
+							$partial = 1 if($is ne $record[$recHash{$what}]);
+						}
+						if ($partial){
+							next; # go to next line because the AND clause was not met
+						}
+						foreach(@what){
+							my $match = "";
+							if(length($record[$recHash{$_}]) < $colSize{$_}){
+								$match = $record[$recHash{$_}];
+								my $buff = int($colSize{$_}) - length($record[$recHash{$_}]);
+								$match .= " " x $buff; # append a buffer for display
+							}else{
+								# THAIR SHOUL BE NO ELSE! HOW DARE UUUU!!!!!!!
+							}
+							$output .= $match;
+						}
+						$output = $sep . "\n " . " " . $output;
+						push(@output,$output);
+					}
+				}
+			}else{ # no clause, print all
+				if($what eq '*'){
+					printf("%s\n",$_);
+				}else{
+					foreach(@what){
+						$output .= $record[$recHash{$_}] . ",";
+					}
+					$output =~ s/,$//;
+					push(@output,$output);
+					$output = ''; # reset
+				}
+			}
+		}
+		if(grep(/[a-zA-Z0-9]/,@output)){
+			push(@output,$sep."\n");
+		}
+		my $c = 0;
+		foreach(@output){ 
+			printf(" %s\n",$_); 
+			$c++;	
+		} # print them out
+		printf(" %i records returned from database\n",$c); 
+	}
+	n();
+	prompt();
+}
+sub desc(){ # TODO: separate this from the database
+	my $what = $cmd;
+	$what =~ s/des.* ([A-Za-z0-9_-]+);.*/$1/;
+	if(!open(TBL,"db_".$db."/tables/".$what.".tbl")){
+		error("NTD","Table " . $what . " does not exist.");
+		prompt();
+	}
+	my $fl = scalar <TBL>; # read ONLY the first line
+	chomp $fl;
+	my @cols = split(/,/,$fl); # split the file line
+	n(); # newline
+	printf(" Database: %s, Table: %s\n\n",$db,$what);
+	foreach(@cols){
+		my $s = $_;
+		$s =~ s/ /\t=>\t/;
+		$s =~ s/varchar\(([0-9]+)\)/variable character field with max length: $1./;
+		$s =~ s/int.*/integer field./; # integer (like MySQL "int")
+		printf(" %s\n",$s);
+	}
+	n();
+	prompt();
+}
+sub show(){ # for now, just tbales:
+	if($cmd =~ m/ow tables.*;$/i){
+		opendir(my $d,"db_".$db."/tables/");
+		my @tbls = readdir($d);
+		n();
+		foreach(@tbls){
+			my $tbl = $_;
+			$tbl =~ s/\.tbl$//;
+			printf(" %s\n",$tbl) if ($tbl !~ m/^\./); # UNIX has those, you know.
+		}
+		n();
+		closedir($d);
+	}else{
+		error("SYNTAX","show what?");
+		prompt();
+	}
+	prompt();
+}
+# Generic Subroutines:
+sub error{
+	print " There was an error of type: " . $_[0] . "\n"
+		. " Message: " . $_[1] . "\n";
+}
+sub n(){
+	printf("\n");
+}
+sub getDate{
+	my @time = localtime(time);
+	for(my $i=0;$i<=$#time;$i++){
+		if(length($time[$i]) < 2){
+			$time[$i] = "0".$time[$i];
+		}
+	}
+	if($_[0] eq 'log'){
+		return "logs/shieldDB." . $time[4] . "." . $time[3] . "." . ($time[5] + 1900) . ".log";
+	}else{
+		return $time[2].":".$time[1].":".$time[0];
+	}
+}
+sub help(){
+	printf("\n +--------------------------------------+\n  ShieldDB - Database Management Systems\n +--------------------------------------+\n\n -- SQL --\n\n   SELECT\t=>\tSELECT SQL Query.\n   USE  \t=>\tUse Database\n   SHOW  \t=>\tShow tables\n   DESCRIBE\t=>\tTable description\n\n -- CMD --\n\n   clear\t=>\tclear screen.\n   exit/quit\t=>\tleave me alone.\n\n +--------------------------------------+\n  2013/2014 GNU (c) WeakNet Labs\n\n");
+}
+sub cleanUp(){
+	close LOG;
+	printf(" Goodbye\n");
+	exit;
+}
+## All done:

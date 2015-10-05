@@ -1,0 +1,27 @@
+= SQL SELECT QUERY =
+
+ select * from tablename
+ select foo,bar from tablename
+ select * from tablename where foo = bar
+ select foo,bar from tablename where baz = qux
+ select * from tablename where foo = '/REGEXP/'
+ select foo,bar from tablename where baz = '/REGEXP/'
+
+ = SQL MISC =
+
+ truncate tablename
+ describe tablename
+ show tables
+ use databasename
+ use database databasename
+ clone table tablename as newtablename
+ clone database databasename as newdatabasename
+ drop table tablename
+ drop database databasename
+ drop db databasename
+ alter table tablename add columnname columndescriptor last
+
+ = Generic Commands =
+
+ clear
+ quit / exit

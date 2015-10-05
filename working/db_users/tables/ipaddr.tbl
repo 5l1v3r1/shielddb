@@ -1,0 +1,4 @@
+user_id int(3) primary_key auto_increment,ip_addr varchar(15),timestamp varchar(20)
+0,13.37.13.37,
+1,20.07.83.35,
+2,254.255.165.199,
