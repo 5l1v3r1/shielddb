@@ -1,0 +1,38 @@
+14:53:31: use users;
+14:53:36: show tables;
+14:53:42: describe usernames;
+14:53:54: select * from usernames;
+14:53:58: exit
+15:06:47: use users;
+15:06:53: select * from usernames;
+15:07:01: exit;
+15:13:38: use users;
+15:13:43: select * from usernames;
+15:15:43: use users;
+15:15:49: select * from usernames;
+15:16:38: us eusers;
+15:16:40: use users;
+15:16:41: select * from usernames;
+15:17:04: select * from usernames where user = 'trevelyn';
+15:17:25: select name,phone,emil from usernames where user = 'trevelyn';
+15:17:53: select name,phone,email from usernames where user = 'trevelyn';
+15:18:07: use users;
+15:18:09: [a
+15:18:27: select * from usernames where name = '/^tre.*n/';
+15:18:54: select * from usernames where user = '/^tre.*n/';
+15:20:54: use users;
+15:20:58:                                                                 $match = " | " . $record[$rechash{$_}];
+15:20:58:                                                                 my $buff = (int($colsize{$_}) - length($record[$rechash{$_}]));
+15:20:58:                                                                 $match .= " " x $buff; # append a buffer for display
+15:21:02: select * from usernames;
+15:22:12: us eusers;
+15:22:14: use users;
+15:22:24: select * from usernames;
+15:23:12: use users;
+15:23:13: select * from usernames;
+15:24:34: use users;
+15:24:36: select * from usernames;
+15:24:47: select name,email from usernames;
+15:25:09: select name,user,email from usernames where user = 'fix';
+15:26:39: use users;
+15:26:46: select name,user,email from usernames where user = 'fix';

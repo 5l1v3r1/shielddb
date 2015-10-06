@@ -1,0 +1,7 @@
+id int not null auto_increment,username varchar(15),email varchar(35)
+0,trevelyn,trev@wnl.com
+1,rfkiller,rfkill@wnl.com
+2,fix,fix@wnl.com
+3,tekk,tekk@wnl.com
+4,wyatderp,wyat@wnl.com
+5,g0tmi1k,g0t@wnl.com

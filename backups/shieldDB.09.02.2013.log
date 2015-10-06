@@ -1,0 +1,5 @@
+00:00:32: use users;
+00:00:37: select * from ipaddr;
+00:00:49: use users;
+00:00:50: ($record[$rechash{$_}]
+12:00:34: help
