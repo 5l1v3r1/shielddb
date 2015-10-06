@@ -5,7 +5,7 @@ As I began to code, I realized that there could be data that could, in fact, be 
 This is purely written in Perl and makes heavy use of Regular Expressions.
 
 # Usage
-As of version 0.6, you can type <code>help;</code> atr the prompt for help dialog. The commands shown below are very simple to demonstrate that the dmbs treats the csv files as database tables. 
+As of version 0.6, you can type <code>help;</code> at the prompt for help dialog. The commands shown below are very simple to demonstrate that the dmbs treats the csv files as database tables. 
 <h3>Stored Procedures and Keys</h3>
 <img src="https://weaknetlabs.com/images/shielddbms_example0"/><br />
 <h3>Regular Expression Support</h3>
