@@ -24,10 +24,9 @@ CPAN - Term::ANSIColor (http://search.cpan.org/~rra/Term-ANSIColor-4.03/lib/Term
 from the package management system.
 
 # Install
-<code>
-git clone https://github.com/weaknetlabs/shielddb.git<br />
-cd shielddb<br />
-cpan -i Term::ANSIColor<br />
-./shielddbms.pl
-</code>
+
+<code>git clone https://github.com/weaknetlabs/shielddb.git</code><br />
+<code>cd shielddb</code><br />
+<code>cpan -i Term::ANSIColor</code><br />
+<code>./shielddbms.pl</code>
 # Videos
