@@ -8,13 +8,7 @@ This is purely written in Perl and makes heavy use of Regular Expressions.
 <h3>Stored Procedures and Keys</h3>
 <img src="https://weaknetlabs.com/images/shielddbms_example0"/><br />
 <h3>Regular Expression Support</h3>
-<span style="color:#a40000">ShieldDB</span> 15:00:46 (<span style="color:#36a400;">testData</span>)> delete from foo where name = "/[Dd]ougl.s/";<br />
- -> 1 records removed from table.<br />
-<span style="color:#a40000">ShieldDB</span> 15:01:14 (<span style="color:#36a400;">testData</span>)> select * from foo;<br />
-1,Gabriella Berdeaux,crwabapples@gmail.com,<br />
-<span style="color:#a40000">ShieldDB</span> 15:01:18 (<span style="color:#36a400;">testData</span>)> select email from foo where email = "/wab.*l.s/";<br />
-crwabapples@gmail.com,<br />
-<span style="color:#a40000">ShieldDB</span> 15:01:52 (<span style="color:#36a400;">testData</span>)><br />
+<img src="https://weaknetlabs.com/images/shielddbms_example1"/><br />
 <h3>Update Records Using Regular Expressions</h3>
 <span style="color:#a40000">ShieldDB</span> 15:20:52 (<span style="color:#36a400;">testData</span>)> select * from foo;<br />
 1,Gabriella Berdeaux,dacrwaaaab2,<br />
