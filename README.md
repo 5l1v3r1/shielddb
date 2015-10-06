@@ -20,7 +20,7 @@ This is purely written in Perl and makes heavy use of Regular Expressions.
 <span style="color:#a40000">ShieldDB</span> 15:22:19 (<span style="color:#36a400;">testData</span>)><br />
 
 # Dependencies
-CPAN - Term::ANSIColor - can be installed using the terminal, e.g. "cpan -i Term::ANSIColor" or, if using Linux, 
+CPAN - Term::ANSIColor (http://search.cpan.org/~rra/Term-ANSIColor-4.03/lib/Term/ANSIColor.pm) - can be installed using the terminal, e.g. "cpan -i Term::ANSIColor" or, if using Linux, 
 from the package management system.
 
 # Videos
