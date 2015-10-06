@@ -27,6 +27,6 @@ from the package management system.
 
 <code>git clone https://github.com/weaknetlabs/shielddb.git</code><br />
 <code>cd shielddb</code><br />
-<code>cpan -i Term::ANSIColor</code><br />
+<code>sudo cpan -i Term::ANSIColor</code><br />
 <code>./shielddbms.pl</code>
 # Videos
