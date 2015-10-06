@@ -25,9 +25,9 @@ from the package management system.
 
 # Install
 <code>
-git clone https://github.com/weaknetlabs/shielddb.git
-cd shielddb
-cpan -i Term::ANSIColor
+git clone https://github.com/weaknetlabs/shielddb.git<br />
+cd shielddb<br />
+cpan -i Term::ANSIColor<br />
 ./shielddbms.pl
 </code>
 # Videos
