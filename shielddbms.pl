@@ -9,7 +9,6 @@ use strict;
 use Term::ANSIColor;
 
 # global variables
-my @ARGV; # reserved
 my $db = ""; # which database in use?
 
 # Subroutine prototypes
@@ -36,11 +35,17 @@ sub del($);       # delete record
 sub trunc($);     # truncate table
 sub update($);	  # update a record
 sub incl($);	  # in() clause
+sub man();	  # manual page
 
-if(!$ARGV[0]){
+if(!$ARGV[0]){ # check for arguments
 	prompt() while (1); # to infinity and beyond!
+}else{
+	if($ARGV[0] =~ m/^-?-h(elp)?$/){
+		man(); # manual page
+	}
 }
 
+# All functions below:
 sub prompt(){
 	my $dbn = $db;
 	$dbn = "none" if($dbn eq "");
@@ -712,6 +717,26 @@ sub chkdb(){
 		error("DB","please first choose a database");
 		return 1;
 	}
+}
+
+sub man() { # manual output from "--help" or "-h"
+        if(open(CMNL,"manual/commands.csv")){
+                printf(" == SHIELDDB SQL COMMANDS ==\n\n");
+                while(<CMNL>){
+                        my @l = split(/,/,$_);
+                        printf(" -> %s\n",shift(@l)); # grab the first line
+                        foreach(@l){ # the rest of the line
+                                my $l = $_;
+                                $l =~ s/_/,/g; # because we can't edit $_ - fooey!
+                                $l =~ s/auto,increment/auto_increment/; # dirty fix for now
+                                printf("\t=> %s\n",$l);
+                        }
+                }
+                close(CMNL);
+        }else{
+                error("FSE","missing commands manual");
+        }
+	return;
 }
 
 sub n(){
