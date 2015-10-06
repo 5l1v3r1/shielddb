@@ -23,6 +23,11 @@ This is purely written in Perl and makes heavy use of Regular Expressions.
 CPAN - Term::ANSIColor (http://search.cpan.org/~rra/Term-ANSIColor-4.03/lib/Term/ANSIColor.pm) - can be installed using the terminal, e.g. "cpan -i Term::ANSIColor" or, if using Linux, 
 from the package management system.
 
+# Install
+<code>
+git clone https://github.com/weaknetlabs/shielddb.git
+cd shielddb
+cpan -i Term::ANSIColor
+./shielddbms.pl
+</code>
 # Videos
-
-#
