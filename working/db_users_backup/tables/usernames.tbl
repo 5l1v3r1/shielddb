@@ -1,4 +1,0 @@
-user varchar(15),email varchar(30),phone int(10),name varchar(30)
-trevelyn,weaknetlabs@gmail.com,4128850075,Douglas Berdeaux
-fix,fixer@sbl.org,4125551212,The Fixer
-RFKiller,rfkiller@stm33b0.info,4125551337,Grant Stone

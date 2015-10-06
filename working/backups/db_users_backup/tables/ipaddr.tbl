@@ -1,1 +1,0 @@
-user_id int(3) primary_key auto_increment,ip_addr varchar(15),timestamp varchar(20),timestamp varchar(20),
